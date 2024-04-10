@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyInsights", "TinyInsights\TinyInsights.csproj", "{90759FEA-89BF-450C-9482-F28F8B1A4C60}"
 EndProject
@@ -11,15 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{93EBF8A0-8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyInsights.ApplicationInsights", "TinyInsights.ApplicationInsights\TinyInsights.ApplicationInsights.csproj", "{5710F2DF-0F90-433D-A24B-BDAA819ABFDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyTestApp", "TinyTestApp\TinyTestApp.csproj", "{AC719C3D-D33E-41B1-AD13-DF04088038E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyTestApp", "TinyTestApp\TinyTestApp.csproj", "{AC719C3D-D33E-41B1-AD13-DF04088038E0}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		TinyInsights.TestApp\TinyInsights.TestApp\TinyInsights.TestApp.projitems*{0533d9a3-eaad-4f16-81c6-6b011b57466e}*SharedItemsImports = 4
-		TinyInsights.TestApp\TinyInsights.TestApp\TinyInsights.TestApp.projitems*{8e2a99b9-4edb-4a38-bdd8-4f9733db8065}*SharedItemsImports = 4
-		TinyInsights.TestApp\TinyInsights.TestApp\TinyInsights.TestApp.projitems*{b55cbc9b-1edd-4d80-84be-941c501ec61b}*SharedItemsImports = 4
-		TinyInsights.TestApp\TinyInsights.TestApp\TinyInsights.TestApp.projitems*{c56cdad5-5bb6-41e4-8d72-f4ad530cc86d}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
 		Ad-Hoc|ARM = Ad-Hoc|ARM
@@ -217,6 +211,7 @@ Global
 		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.AppStore|x86.Build.0 = Debug|Any CPU
 		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.Debug|ARM.Build.0 = Debug|Any CPU
 		{AC719C3D-D33E-41B1-AD13-DF04088038E0}.Debug|iPhone.ActiveCfg = Debug|Any CPU
