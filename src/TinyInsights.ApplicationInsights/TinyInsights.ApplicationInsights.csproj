@@ -1,11 +1,12 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>Xamarin.iOS10;MonoAndroid80;MonoAndroid81;MonoAndroid90;MonoAndroid10.0;uap10.0.16299</TargetFrameworks>
-    
-    <PackageLicenseUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
-    <PackageTags>xamarin applicationInsights</PackageTags>
+    <TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+    <UseMaui>true</UseMaui>
+    <PackageLicenseUrl>https://github.com/dhindrik/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/dhindrik/TinyInsights</PackageProjectUrl>
+    <PackageTags>maui applicationInsights</PackageTags>
     <Title>TinyInsights, Application Insights provider</Title>
     <PackageId>TinyInsights.ApplicationInsights</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
@@ -22,12 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.13.1" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="2.0.54" PrivateAssets="All" />
+    <PackageReference Include="Json.Net" Version="1.0.33" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.20" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    
-    <PackageReference Include="Xamarin.Essentials" Version="1.5.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">

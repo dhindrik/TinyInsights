@@ -1,27 +1,28 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using Xamarin.Essentials;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Devices;
+using Microsoft.Maui.Storage;
+using Newtonsoft.Json;
 
-#if WINDOWS_UWP
+#if WINDOWS
 using Windows.Storage;
 using Windows.UI.Xaml;
 #endif
 
-namespace TinyInsightsLib.ApplicationInsights
-{
+namespace TinyInsightsLib.ApplicationInsights;
     public class ApplicationInsightsProvider : ITinyInsightsProvider
     {
-        public const string userIdKey = nameof(userIdKey);
+        private const string userIdKey = nameof(userIdKey);
 
         private const string crashLogFilename = "crashes.tinyinsights";
-#if __IOS__ || __ANDROID__
+#if IOS || MACCATALYST || ANDROID
         private readonly string logPath = FileSystem.CacheDirectory;
 
 #endif
@@ -33,13 +34,16 @@ namespace TinyInsightsLib.ApplicationInsights
         public bool IsTrackEventsEnabled { get; set; } = true;
         public bool IsTrackDependencyEnabled { get; set; } = true;
 
-#if __IOS__ || __ANDROID__
-        public ApplicationInsightsProvider(string key)
+#if IOS|| MACCATALYST || ANDROID
+        public ApplicationInsightsProvider(string connectionString)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-            var configuration = new TelemetryConfiguration(key);
+            var configuration = new TelemetryConfiguration()
+            {
+                ConnectionString = connectionString
+            };
 
             try
             {
@@ -64,7 +68,7 @@ namespace TinyInsightsLib.ApplicationInsights
             HandleCrash((Exception)e.ExceptionObject);
         }
 
-#elif WINDOWS_UWP
+#elif WINDOWS
         public ApplicationInsightsProvider(Application app, string key)
         {
             app.UnhandledException += App_UnhandledException;
@@ -139,7 +143,7 @@ namespace TinyInsightsLib.ApplicationInsights
         {
             try
             {
-#if __IOS__ || __ANDROID__
+#if IOS || MACCATALYST || ANDROID
                 var path = Path.Combine(logPath, crashLogFilename);
 
                 if (!File.Exists(path))
@@ -148,7 +152,7 @@ namespace TinyInsightsLib.ApplicationInsights
                 }
 
                 var json = File.ReadAllText(path);
-#elif WINDOWS_UWP
+#elif WINDOWS
             
             var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
             fileTask.Wait();
@@ -183,7 +187,7 @@ namespace TinyInsightsLib.ApplicationInsights
 
                 var json = JsonConvert.SerializeObject(crashes, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
-#if __IOS__ || __ANDROID__
+#if IOS|| MACCATALYST || ANDROID
                 var path = Path.Combine(logPath, crashLogFilename);
 
                 if (!File.Exists(path))
@@ -192,7 +196,7 @@ namespace TinyInsightsLib.ApplicationInsights
                 }
 
                 System.IO.File.WriteAllText(path, json);
-#elif UWP
+#elif WINDOWS
              var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
             fileTask.Wait();
             var file = fileTask.Result;
@@ -274,4 +278,3 @@ namespace TinyInsightsLib.ApplicationInsights
             }
         }
     }
-}

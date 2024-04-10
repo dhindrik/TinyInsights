@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageLicenseUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
     <PackageTags>xamarin appcenter</PackageTags>
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
 
@@ -26,7 +26,7 @@
     <ProjectReference Include="..\TinyInsights\TinyInsights.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.2.0" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.2.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.3" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.3" />
   </ItemGroup>
 </Project>
