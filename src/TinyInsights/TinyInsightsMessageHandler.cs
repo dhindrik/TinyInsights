@@ -11,30 +11,43 @@ namespace TinyInsightsLib
         {
             InnerHandler = new HttpClientHandler();
         }
-        
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var startTime = DateTime.Now;
 
-            var response = await base.SendAsync(request, cancellationToken);
-
-            var endTime = DateTime.Now;
-
-            Exception exception = null;
-            
             try
             {
-                response.EnsureSuccessStatusCode();
+
+
+                var response = await base.SendAsync(request, cancellationToken);
+
+                var endTime = DateTime.Now;
+
+                Exception exception = null;
+
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
+
+                await TinyInsights.TrackDependencyAsync(request.RequestUri.Host, request.RequestUri.ToString(), startTime, endTime - startTime,
+                    response.IsSuccessStatusCode, (int)response.StatusCode, exception);
+
+                return response;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                exception = e;
+                var endTime = DateTime.Now;
+                await TinyInsights.TrackDependencyAsync(request.RequestUri.Host, request.RequestUri.ToString(), startTime, endTime - startTime,
+                   false, 0, ex);
+
+                throw;
             }
-            
-            await TinyInsights.TrackDependencyAsync(request.RequestUri.Host, request.RequestUri.ToString(), startTime, endTime - startTime,
-                response.IsSuccessStatusCode, (int)response.StatusCode, exception);
-            
-            return response;
         }
     }
 }
