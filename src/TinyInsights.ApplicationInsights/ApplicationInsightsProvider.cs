@@ -1,16 +1,16 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Devices;
+using Microsoft.Maui.Storage;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Devices;
-using Microsoft.Maui.Storage;
-using Newtonsoft.Json;
-using Microsoft.Maui;
 
 
 #if WINDOWS
@@ -27,8 +27,6 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
 
     private readonly string logPath = FileSystem.CacheDirectory;
 
-
-
     private TelemetryClient client;
 
     public bool IsTrackErrorsEnabled { get; set; } = true;
@@ -37,38 +35,38 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
     public bool IsTrackDependencyEnabled { get; set; } = true;
 
 #if IOS || MACCATALYST || ANDROID
-        public ApplicationInsightsProvider(string connectionString)
+    public ApplicationInsightsProvider(string connectionString)
+    {
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+        var configuration = new TelemetryConfiguration()
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            ConnectionString = connectionString
+        };
 
-            var configuration = new TelemetryConfiguration()
-            {
-                ConnectionString = connectionString
-            };
+        try
+        {
+            client = new TelemetryClient(configuration);
 
-            try
-            {
-                client = new TelemetryClient(configuration);
-
-                AddMetaData();
-            }
-            catch (Exception)
-            {
-            }
-
-            Task.Run(SendCrashes);
+            AddMetaData();
+        }
+        catch (Exception)
+        {
         }
 
-        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
-        {
-            HandleCrash(e.Exception);
-        }
+        Task.Run(SendCrashes);
+    }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            HandleCrash((Exception)e.ExceptionObject);
-        }
+    private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+    {
+        HandleCrash(e.Exception);
+    }
+
+    private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        HandleCrash((Exception)e.ExceptionObject);
+    }
 
 #elif WINDOWS
     public ApplicationInsightsProvider(MauiWinUIApplication app, string connectionString)
@@ -139,14 +137,22 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
 
             if (crashes != null)
             {
-                var properties = new Dictionary<string, string>
-                {
-                    { "IsCrash", "true" }
-                };
+
 
                 foreach (var crash in crashes)
                 {
-                    await TrackErrorAsync(crash, properties);
+                    var ex = crash.GetException();
+                    var properties = new Dictionary<string, string>
+                    {
+                        { "IsCrash", "true" },
+                        {"StackTrace", crash.StackTrace },
+                        {"ExceptionType", crash.ExceptionType },
+                        {"Source", crash.Source}
+                    };
+
+
+
+                    await TrackErrorAsync(ex, properties);
                 }
             }
         }
@@ -155,7 +161,7 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
         }
     }
 
-    private List<Exception> ReadCrashes()
+    private List<TinyCrash> ReadCrashes()
     {
         try
         {
@@ -163,24 +169,24 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
 
             if (!File.Exists(path))
             {
-                return new List<Exception>();
+                return new List<TinyCrash>();
             }
 
             var json = File.ReadAllText(path);
 
             if (string.IsNullOrWhiteSpace(json))
             {
-                return new List<Exception>();
+                return new List<TinyCrash>();
             }
 
-            return JsonConvert.DeserializeObject<List<Exception>>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            return JsonConvert.DeserializeObject<List<TinyCrash>>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         }
         catch (Exception)
         {
         }
 
-        return new List<Exception>();
+        return new List<TinyCrash>();
     }
 
     private void HandleCrash(Exception ex)
@@ -189,7 +195,7 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
         {
             var crashes = ReadCrashes();
 
-            crashes.Add(ex);
+            crashes.Add(new TinyCrash(ex));
 
             var json = JsonConvert.SerializeObject(crashes, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 

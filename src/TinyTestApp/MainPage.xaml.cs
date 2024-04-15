@@ -47,7 +47,7 @@ public partial class MainPage : ContentPage
 
     private void CrashButtom_OnClicked(object? sender, EventArgs e)
     {
-        throw new Exception("Crash Boom Bang!");
+        throw new NullReferenceException("Crash Boom Bang!");
     }
 
     private async void TrackFailedHttpButton_Clicked(object sender, EventArgs e)
@@ -58,7 +58,7 @@ public partial class MainPage : ContentPage
         {
             try
             {
-                var response = await client.GetAsync("https://google.s");
+                var response = await client.GetAsync("https://catchlog-api.azurewebsites.net/api/weather");
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)

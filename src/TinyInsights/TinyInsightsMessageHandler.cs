@@ -18,8 +18,6 @@ namespace TinyInsightsLib
 
             try
             {
-
-
                 var response = await base.SendAsync(request, cancellationToken);
 
                 var endTime = DateTime.Now;
