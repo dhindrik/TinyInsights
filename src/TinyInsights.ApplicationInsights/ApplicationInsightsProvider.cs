@@ -104,7 +104,7 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
         client.Context.Device.OperatingSystem = DeviceInfo.Platform.ToString();
         client.Context.Device.Model = DeviceInfo.Model;
         client.Context.Device.Type = DeviceInfo.Idiom.ToString();
-
+        
         //Role name will show device name if we don't set it to empty and we want it to be so anonymous as possible.
         client.Context.Cloud.RoleName = string.Empty;
         client.Context.Cloud.RoleInstance = string.Empty;
@@ -127,6 +127,7 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
         client.Context.GlobalProperties.TryAdd("Manufacturer", DeviceInfo.Manufacturer);
         client.Context.GlobalProperties.TryAdd("AppVersion", AppInfo.VersionString);
         client.Context.GlobalProperties.TryAdd("AppBuildNumber", AppInfo.BuildString);
+        client.Context.GlobalProperties.TryAdd("OperatingSystemVersion", DeviceInfo.VersionString);
     }
 
     private async Task SendCrashes()
@@ -218,6 +219,13 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
     {
         try
         {
+            if (properties == null)
+            {
+                properties = new Dictionary<string, string>();
+            }
+
+            properties.Add("StackTrace", ex.StackTrace);
+            
             client.TrackException(ex, properties);
             client.Flush();
         }
@@ -264,13 +272,13 @@ public class ApplicationInsightsProvider : ITinyInsightsProvider
             if (exception != null)
             {
                 var properties = new Dictionary<string, string>();
-                properties.Add("Exception message", exception.Message);
+                properties.Add("ExceptionMessage", exception.Message);
                 properties.Add("StackTrace", exception.StackTrace);
 
                 if (exception.InnerException != null)
                 {
-                    properties.Add("Inner exception message", exception.InnerException.Message);
-                    properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                    properties.Add("InnerExceptionMessage", exception.InnerException.Message);
+                    properties.Add("InnerExceptionStackTrace", exception.InnerException.StackTrace);
                 }
             }
 
