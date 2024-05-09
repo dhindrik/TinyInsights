@@ -55,7 +55,7 @@ namespace TinyInsightsLib
                     tasks.Add(task);
             }
 
-            _ = Task.WhenAll(tasks);
+            _ = Task.WhenAll(tasks); 
         }
 
         public static async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
